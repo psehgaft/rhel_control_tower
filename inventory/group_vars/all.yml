@@ -3,7 +3,7 @@
 section_subscription: false
 section_open_repositories: false
 section_idm_server: false
-section_idm_users_groups: false
+section_idm_identity_provider: false
 section_idm_dns: false
 section_aix_automation: false
 section_nfs: false
@@ -40,7 +40,7 @@ idm_groups:
   - {name: readers, description: Readers}
 idm_users:
   - {name: sysadmin, first: System, last: Administrator, password: CHANGEME, groups: [sysadmins]}
-  - {name: lector, first: Read, last: Only, password: CHANGEME, groups: [readers]}
+  - {name: reader, first: Read, last: Only, password: CHANGEME, groups: [readers]}
 idm_user_manage_passwords: false
 
 # Install the collection used to manage AIX on the Ansible control node, not on this RHEL host.
