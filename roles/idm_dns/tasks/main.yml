@@ -1,5 +1,5 @@
 ---
-- name: Crear zonas IdM
+- name: Create IdM DNS zones
   freeipa.ansible_freeipa.ipadnszone:
     ipaadmin_password: "{{ idm_admin_password }}"
     zone_name: "{{ item }}"
@@ -7,7 +7,7 @@
   loop: "{{ idm_dns_zones }}"
   no_log: true
 
-- name: Crear registros DNS A
+- name: Create DNS A records
   freeipa.ansible_freeipa.ipadnsrecord:
     ipaadmin_password: "{{ idm_admin_password }}"
     zone_name: "{{ item.zone | default(idm_domain) }}"
