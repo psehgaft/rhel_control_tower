@@ -1,5 +1,5 @@
 ---
-- name: Crear grupos de IdM
+- name: Create IdM groups
   freeipa.ansible_freeipa.ipagroup:
     ipaadmin_password: "{{ idm_admin_password }}"
     name: "{{ item.name }}"
@@ -8,7 +8,7 @@
   loop: "{{ idm_groups }}"
   no_log: true
 
-- name: Crear usuarios con contraseña gestionada
+- name: Create users and manage their passwords
   freeipa.ansible_freeipa.ipauser:
     ipaadmin_password: "{{ idm_admin_password }}"
     name: "{{ item.name }}"
@@ -20,7 +20,7 @@
   when: idm_user_manage_passwords | bool
   no_log: true
 
-- name: Crear usuarios sin asignar contraseñas
+- name: Create users without assigning passwords
   freeipa.ansible_freeipa.ipauser:
     ipaadmin_password: "{{ idm_admin_password }}"
     name: "{{ item.name }}"
@@ -31,7 +31,7 @@
   when: not (idm_user_manage_passwords | bool)
   no_log: true
 
-- name: Añadir usuarios a sus grupos
+- name: Add users to their groups
   freeipa.ansible_freeipa.ipagroup:
     ipaadmin_password: "{{ idm_admin_password }}"
     name: "{{ item.1 }}"
