@@ -1,0 +1,13 @@
+[Unit]
+Description=OCI Registry v2
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Restart=always
+ExecStartPre=-/usr/bin/podman rm -f {{ registry_name }}
+ExecStart=/usr/bin/podman run --name {{ registry_name }} --rm -p {{ registry_port }}:5000 -v {{ registry_data_dir }}:/var/lib/registry:Z{% if registry_tls_enabled | bool %} -v {{ registry_cert_path }}:/certs/tls.crt:ro,Z -v {{ registry_key_path }}:/certs/tls.key:ro,Z -e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/tls.crt -e REGISTRY_HTTP_TLS_KEY=/certs/tls.key{% endif %} {{ registry_image }}
+ExecStop=/usr/bin/podman stop -t 10 {{ registry_name }}
+
+[Install]
+WantedBy=multi-user.target
