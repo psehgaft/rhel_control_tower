@@ -24,7 +24,7 @@ The `open_repositories` role configures only entries explicitly listed in `open_
 
 The IdM server requires a static FQDN, correct DNS and time synchronization, and prepared firewall/network access. The server provides LDAP and Kerberos identity services. Set `idm_ldap_uri`, `idm_ldap_base_dn`, and `idm_kerberos_realm` for downstream integrations. DNS zones are listed in `idm_dns_zones`; A records use `name`, `zone`, and `ip` in `idm_dns_records`.
 
-The built-in `admin` principal is configured with the IdM admin secret. The local Linux `root` account is intentionally not created or changed by the IdM user role. `sysadmin` and `lector` are domain identities assigned to the configured groups. Set user passwords through an encrypted Vault variable if password management is enabled.
+The built-in `admin` principal is configured with the IdM admin secret. The local Linux `root` account is intentionally not created or changed by the IdM user role. `sysadmin` and `reader` are domain identities assigned to the configured groups. Set user passwords through an encrypted Vault variable if password management is enabled.
 
 ## Security and adding roles
 
