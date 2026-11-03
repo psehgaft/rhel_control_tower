@@ -1,5 +1,5 @@
 ---
-- name: Instalar colección IBM Power AIX en el controlador Ansible
+- name: Install the IBM Power AIX collection on the Ansible control node
   community.general.ansible_galaxy_install:
     type: collection
     name: "{{ aix_collection_name }}"
