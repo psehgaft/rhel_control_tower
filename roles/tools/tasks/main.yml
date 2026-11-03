@@ -1,10 +1,10 @@
 ---
-- name: Instalar herramientas desde repositorios habilitados
+- name: Install tools from enabled repositories
   ansible.builtin.package:
     name: "{{ tool_packages }}"
     state: present
 
-- name: Descargar binarios externos con SHA-256 validado
+- name: Download external binaries with validated SHA-256 checksums
   ansible.builtin.get_url:
     url: "{{ item.url }}"
     dest: "{{ item.dest }}"
