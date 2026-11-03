@@ -1,5 +1,5 @@
 ---
-- name: Reiniciar Registry
+- name: Restart the registry
   ansible.builtin.systemd:
     name: "{{ registry_name }}"
     daemon_reload: true
