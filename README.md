@@ -1,34 +1,46 @@
 # RHEL Control Tower
 
-Colección de playbooks y roles Ansible para preparar servidores RHEL 7, 8, 9 y 10 con componentes seleccionables desde el inventario.
+Ansible playbooks and roles for preparing RHEL 7, 8, 9, and 10 servers. Each role is enabled by a boolean section flag in the inventory.
 
-El playbook principal habilita cada componente con una bandera `section_*` en `inventory/group_vars/all.yml`. Incluye roles para suscripción RHSM, repositorios abiertos permitidos, Identity Management (IdM/FreeIPA), usuarios/grupos y DNS, colección Ansible para IBM AIX, NFS, Podman, Registry v2, HAProxy, Keepalived, herramientas y OpenSCAP.
+The starter project includes RHSM registration, approved public repositories, an Identity Management (IdM/FreeIPA) server, IdM users and groups, DNS zones and A records, the IBM AIX Ansible collection, NFS, Podman, OCI Registry v2, HAProxy, Keepalived, administration tools, and OpenSCAP.
 
-> **Compatibilidad:** ofrece una estructura común para RHEL 7–10. La disponibilidad de paquetes y el soporte dependen de la versión menor, arquitectura, suscripción y repositorios. RHEL 7 está fuera de mantenimiento general; valida el soporte vigente antes de usarlo en producción. Instala IdM en un host limpio y dedicado.
+> **Compatibility:** This project provides a common automation structure for RHEL 7–10. Package availability and product support depend on the RHEL minor release, architecture, subscription, and configured repositories. RHEL 7 is outside general maintenance; verify current support before production use. Install an IdM server on a clean, dedicated host.
 
-## Requisitos y ejecución
+## Requirements and quick start
 
-- Ansible en el nodo de control; SSH, Python y privilegios `become` en los nodos.
-- RHSM activa si se usa contenido de Red Hat.
-- Instala colecciones: `ansible-galaxy collection install -r requirements.yml`.
-- Edita `inventory/hosts.yml` y `inventory/group_vars/all.yml`; reemplaza CHANGEME y activa solo las banderas necesarias.
-- Cifra contraseñas con Ansible Vault. Luego valida: `ansible-playbook -i inventory/hosts.yml site.yml --syntax-check`.
-- Ejecuta primero en laboratorio: `ansible-playbook -i inventory/hosts.yml site.yml --limit rhel_servers`.
+- Ansible on the control node; SSH, Python, and privilege escalation on managed hosts.
+- An active RHSM subscription when using Red Hat content.
+- Install the required collections: `ansible-galaxy collection install -r requirements.yml`.
+- Edit `inventory/hosts.yml` and `inventory/group_vars/all.yml`. Replace every CHANGEME value and enable only the required section flags.
+- Store passwords in an Ansible Vault encrypted file. Do not commit plaintext secrets.
+- Review the configuration, then run: `ansible-playbook -i inventory/hosts.yml site.yml --syntax-check`.
+- Start with a lab host: `ansible-playbook -i inventory/hosts.yml site.yml --limit rhel_servers`.
 
-## Repositorios
+## Repository configuration
 
-El rol `open_repositories` habilita solo las entradas declaradas en `open_repositories`. Agrega repositorios públicos aprobados y específicos para cada versión, con URL y llave GPG. Los repositorios oficiales se habilitan por RHSM mediante `rhsm_repositories`; no se activa indiscriminadamente cada repositorio.
+The `open_repositories` role configures only entries explicitly listed in `open_repositories`. Add approved public repositories with version-appropriate URLs and GPG keys. Red Hat repositories are enabled separately through RHSM using `rhsm_repositories`; the playbook does not enable every available repository automatically.
 
-## IdM
+## Identity Management
 
-El servidor requiere FQDN estático, DNS/NTP y puertos preparados. Las zonas se declaran en `idm_dns_zones`; los registros A, como pares `name`/`ip`, en `idm_dns_records`. El usuario integrado `admin` usa el secreto de IdM. `root` es una cuenta local y no se crea como usuario de dominio. `sysadmin` y `lector` son identidades de dominio asignables a grupos; proporciona sus contraseñas mediante Vault si gestionas contraseñas con el playbook.
+The IdM server requires a static FQDN, correct DNS and time synchronization, and prepared firewall/network access. The server provides LDAP and Kerberos identity services. Set `idm_ldap_uri`, `idm_ldap_base_dn`, and `idm_kerberos_realm` for downstream integrations. DNS zones are listed in `idm_dns_zones`; A records use `name`, `zone`, and `ip` in `idm_dns_records`.
 
-## Seguridad y roles adicionales
+The built-in `admin` principal is configured with the IdM admin secret. The local Linux `root` account is intentionally not created or changed by the IdM user role. `sysadmin` and `lector` are domain identities assigned to the configured groups. Set user passwords through an encrypted Vault variable if password management is enabled.
 
-Los valores CHANGEME son marcadores, no secretos válidos. Usa una variable cifrada para RHSM, IdM, Keepalived y cualquier credencial. El registry viene con TLS habilitado; aporta certificados válidos y almacenamiento persistente. OpenSCAP solo evalúa (no remedia automáticamente); configura un perfil válido. Los binarios externos necesitan URL y checksum SHA-256.
+## Security and adding roles
 
-Para agregar roles, crea `roles/<nombre>/tasks/main.yml`, agrega `section_<nombre>` al inventario y un bloque condicional `import_role` en `site.yml`.
+CHANGEME values are placeholders, not usable credentials. Encrypt RHSM, IdM, and Keepalived secrets with Ansible Vault. The registry uses TLS by default; provide valid certificates and persistent storage. OpenSCAP evaluates a selected profile without automatically remediating the host. External CLI binaries require a URL and verified SHA-256 checksum.
+
+To add a role, create `roles/<role_name>/tasks/main.yml`, add a boolean `section_<role_name>` flag to the inventory, and add a conditional `import_role` task to `site.yml`. Document role variables and supported RHEL versions.
+
+## Repository layout
 
 ```text
-inventory/  roles/  site.yml  requirements.yml  ansible.cfg
+inventory/
+  hosts.yml
+  group_vars/all.yml
+roles/
+  <role_name>/tasks/main.yml
+site.yml
+requirements.yml
+ansible.cfg
 ```
