@@ -1,0 +1,22 @@
+---
+# Copy this file to vault.yml, replace placeholders, and encrypt it with Ansible Vault.
+rhsm_username: CHANGEME
+rhsm_password: CHANGEME
+rhsm_org_id: CHANGEME
+rhsm_activationkey: CHANGEME
+
+idm_admin_password: CHANGEME
+idm_directory_manager_password: CHANGEME
+idm_users:
+  - name: sysadmin
+    first: System
+    last: Administrator
+    password: CHANGEME
+    groups: [sysadmins]
+  - name: reader
+    first: Read
+    last: Only
+    password: CHANGEME
+    groups: [readers]
+
+keepalived_auth_pass: CHANGEME

@@ -1,0 +1,19 @@
+---
+- name: Validate approved repositories
+  ansible.builtin.assert:
+    that:
+      - item.name is defined
+      - item.baseurl is defined
+      - item.gpgkey is defined
+  loop: "{{ open_repositories }}"
+
+- name: Configure declared public repositories
+  ansible.builtin.yum_repository:
+    name: "{{ item.name }}"
+    description: "{{ item.description | default(item.name) }}"
+    baseurl: "{{ item.baseurl }}"
+    gpgkey: "{{ item.gpgkey }}"
+    gpgcheck: "{{ item.gpgcheck | default(true) }}"
+    enabled: "{{ item.enabled | default(true) }}"
+    state: present
+  loop: "{{ open_repositories }}"

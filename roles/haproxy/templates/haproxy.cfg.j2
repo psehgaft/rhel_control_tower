@@ -1,0 +1,29 @@
+global
+    log 127.0.0.1 local2
+    chroot /var/lib/haproxy
+    pidfile /var/run/haproxy.pid
+    maxconn 4000
+    user haproxy
+    group haproxy
+    daemon
+
+defaults
+    mode tcp
+    log global
+    option tcplog
+    timeout connect 10s
+    timeout client 1m
+    timeout server 1m
+
+{% for frontend in haproxy_frontends %}
+frontend {{ frontend.name }}
+    bind {{ frontend.bind }}
+    default_backend {{ frontend.backend }}
+{% endfor %}
+{% for backend in haproxy_backends %}
+backend {{ backend.name }}
+    balance {{ backend.balance | default('roundrobin') }}
+{% for server in backend.servers %}
+    server {{ server.name }} {{ server.address }} check
+{% endfor %}
+{% endfor %}

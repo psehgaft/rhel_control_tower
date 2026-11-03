@@ -1,0 +1,92 @@
+---
+# One boolean flag per role. Keep each flag false until variables are configured and the impact is reviewed.
+section_subscription: false
+section_open_repositories: false
+section_idm_server: false
+section_idm_identity_provider: false
+section_idm_dns: false
+section_aix_automation: false
+section_nfs: false
+section_podman: false
+section_registry: false
+section_haproxy: false
+section_keepalived: false
+section_tools: false
+section_openscap: false
+
+rhsm_username: CHANGEME
+rhsm_password: CHANGEME
+rhsm_org_id: CHANGEME
+rhsm_activationkey: CHANGEME
+idm_ldap_uri: ldaps://idm01.example.com
+idm_ldap_base_dn: dc=example,dc=com
+idm_kerberos_realm: EXAMPLE.COM
+rhsm_repositories: []
+
+# Allowlist: name, baseurl, and gpgkey; add approved URLs and GPG keys for each RHEL version.
+open_repositories: []
+
+idm_domain: example.com
+idm_realm: EXAMPLE.COM
+idm_server_hostname: idm01.example.com
+idm_dns_forwarders: []
+idm_admin_password: CHANGEME
+idm_directory_manager_password: CHANGEME
+idm_dns_zones: [example.com]
+idm_dns_records:
+  - {name: app01, zone: example.com, ip: 192.0.2.20}
+idm_groups:
+  - {name: sysadmins, description: System administrators}
+  - {name: readers, description: Readers}
+idm_users:
+  - {name: sysadmin, first: System, last: Administrator, password: CHANGEME, groups: [sysadmins]}
+  - {name: reader, first: Read, last: Only, password: CHANGEME, groups: [readers]}
+idm_user_manage_passwords: false
+
+# Install the collection used to manage AIX on the Ansible control node, not on this RHEL host.
+aix_collection_name: ibm.power_aix
+
+nfs_packages: [nfs-utils]
+nfs_exports:
+  - {path: /srv/nfs/share, clients: "192.0.2.0/24", options: "rw,sync,root_squash"}
+nfs_firewall_enabled: false
+
+podman_packages: [podman]
+podman_registries_conf: []
+
+registry_image: docker.io/library/registry:2
+registry_name: registry-v2
+registry_port: 5000
+registry_data_dir: /var/lib/registry
+registry_tls_enabled: true
+registry_cert_path: /etc/pki/registry/tls.crt
+registry_key_path: /etc/pki/registry/tls.key
+registry_firewall_enabled: false
+
+haproxy_frontends: []
+haproxy_backends: []
+
+keepalived_interface: CHANGEME
+keepalived_vip: 192.0.2.100
+keepalived_prefix: 24
+keepalived_router_id: 51
+keepalived_virtual_router_id: 51
+keepalived_priority: 100
+keepalived_state: BACKUP
+keepalived_peer: 192.0.2.11
+keepalived_auth_pass: CHANGEME
+
+tool_packages_by_rhel:
+  "7": [git, ansible, audit]
+  "8": [git, ansible-core, audit]
+  "9": [git, ansible-core, audit]
+  "10": [git, ansible-core, audit]
+# Configure release-specific URLs and verified SHA-256 values before enabling downloads.
+tool_binaries:
+  - {name: oc, url: CHANGEME, checksum: CHANGEME, dest: /usr/local/bin/oc}
+  - {name: kubelet, url: CHANGEME, checksum: CHANGEME, dest: /usr/local/bin/kubelet}
+  - {name: helm, url: CHANGEME, checksum: CHANGEME, dest: /usr/local/bin/helm}
+
+openscap_packages: [openscap-scanner, scap-security-guide]
+openscap_profile: ""
+openscap_report_path: /var/tmp/openscap-report.html

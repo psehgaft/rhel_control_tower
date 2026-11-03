@@ -1,0 +1,21 @@
+---
+- name: Install OpenSCAP and SCAP security guides
+  ansible.builtin.package:
+    name: "{{ openscap_packages }}"
+    state: present
+
+- name: Run an OpenSCAP evaluation without remediation
+  ansible.builtin.command:
+    argv:
+      - oscap
+      - xccdf
+      - eval
+      - --profile
+      - "{{ openscap_profile }}"
+      - --report
+      - "{{ openscap_report_path }}"
+      - "/usr/share/xml/scap/ssg/content/ssg-rhel{{ ansible_facts['distribution_major_version'] }}-ds.xml"
+  register: openscap_scan
+  changed_when: false
+  failed_when: openscap_scan.rc not in [0, 2]
+  when: openscap_profile | length > 0

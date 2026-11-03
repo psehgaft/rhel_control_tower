@@ -1,0 +1,42 @@
+---
+- name: Create IdM groups
+  freeipa.ansible_freeipa.ipagroup:
+    ipaadmin_password: "{{ idm_admin_password }}"
+    name: "{{ item.name }}"
+    description: "{{ item.description | default(omit) }}"
+    state: present
+  loop: "{{ idm_groups }}"
+  no_log: true
+
+- name: Create users and manage their passwords
+  freeipa.ansible_freeipa.ipauser:
+    ipaadmin_password: "{{ idm_admin_password }}"
+    name: "{{ item.name }}"
+    first: "{{ item.first }}"
+    last: "{{ item.last }}"
+    password: "{{ item.password }}"
+    state: present
+  loop: "{{ idm_users }}"
+  when: idm_user_manage_passwords | bool
+  no_log: true
+
+- name: Create users without assigning passwords
+  freeipa.ansible_freeipa.ipauser:
+    ipaadmin_password: "{{ idm_admin_password }}"
+    name: "{{ item.name }}"
+    first: "{{ item.first }}"
+    last: "{{ item.last }}"
+    state: present
+  loop: "{{ idm_users }}"
+  when: not (idm_user_manage_passwords | bool)
+  no_log: true
+
+- name: Add users to their groups
+  freeipa.ansible_freeipa.ipagroup:
+    ipaadmin_password: "{{ idm_admin_password }}"
+    name: "{{ item.1 }}"
+    user: ["{{ item.0.name }}"]
+    action: member
+    state: present
+  loop: "{{ idm_users | subelements('groups') }}"
+  no_log: true

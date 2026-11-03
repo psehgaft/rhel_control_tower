@@ -1,0 +1,19 @@
+---
+- name: Validate initial IdM settings
+  ansible.builtin.assert:
+    that:
+      - idm_admin_password != 'CHANGEME'
+      - idm_directory_manager_password != 'CHANGEME'
+      - ansible_facts['fqdn'] == idm_server_hostname
+    fail_msg: "Set the secrets and FQDN; install IdM on a clean, dedicated host."
+
+- name: Install IdM packages
+  ansible.builtin.package:
+    name: [ipa-server, ipa-server-dns]
+    state: present
+
+- name: Install IdM with integrated DNS
+  ansible.builtin.command:
+    argv: "{{ ['ipa-server-install', '--unattended', '--realm', idm_realm, '--domain', idm_domain, '--hostname', idm_server_hostname, '--ds-password', idm_directory_manager_password, '--admin-password', idm_admin_password, '--setup-dns'] + (idm_dns_forwarders | map('regex_replace', '^(.*)$', '--forwarder=\\1') | list) }}"
+    creates: /etc/ipa/default.conf
+  no_log: true

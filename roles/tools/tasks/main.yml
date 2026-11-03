@@ -1,0 +1,20 @@
+---
+- name: Install tools from enabled repositories
+  ansible.builtin.package:
+    name: "{{ tool_packages_by_rhel[ansible_facts['distribution_major_version']] }}"
+    state: present
+
+- name: Download external binaries with validated SHA-256 checksums
+  ansible.builtin.get_url:
+    url: "{{ item.url }}"
+    dest: "{{ item.dest }}"
+    checksum: "{{ item.checksum }}"
+    mode: "0755"
+    owner: root
+    group: root
+  loop: "{{ tool_binaries }}"
+  when:
+    - item.url is defined
+    - item.url != 'CHANGEME'
+    - item.checksum is defined
+    - item.checksum is match('^sha256:[0-9a-fA-F]{64}$')
