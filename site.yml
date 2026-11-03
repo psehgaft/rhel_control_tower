@@ -1,0 +1,77 @@
+---
+- name: Preparar servidores RHEL
+  hosts: rhel_servers
+  become: true
+  gather_facts: true
+  tasks:
+    - name: Validar la versión mayor de RHEL
+      ansible.builtin.assert:
+        that:
+          - ansible_facts['os_family'] == 'RedHat'
+          - ansible_facts['distribution_major_version'] | int in [7, 8, 9, 10]
+        fail_msg: "Objetivo permitido: RHEL 7, 8, 9 o 10."
+
+    - name: Registrar nodo RHSM
+      ansible.builtin.import_role:
+        name: subscription
+      when: section_subscription | bool
+
+    - name: Configurar repositorios abiertos permitidos
+      ansible.builtin.import_role:
+        name: open_repositories
+      when: section_open_repositories | bool
+
+    - name: Instalar servidor IdM
+      ansible.builtin.import_role:
+        name: idm_server
+      when: section_idm_server | bool
+
+    - name: Configurar usuarios y grupos IdM
+      ansible.builtin.import_role:
+        name: idm_users_groups
+      when: section_idm_users_groups | bool
+
+    - name: Configurar DNS de IdM
+      ansible.builtin.import_role:
+        name: idm_dns
+      when: section_idm_dns | bool
+
+    - name: Instalar colección IBM AIX en el controlador
+      ansible.builtin.import_role:
+        name: aix_automation
+      when: section_aix_automation | bool
+
+    - name: Configurar NFS
+      ansible.builtin.import_role:
+        name: nfs
+      when: section_nfs | bool
+
+    - name: Configurar Podman
+      ansible.builtin.import_role:
+        name: podman
+      when: section_podman | bool
+
+    - name: Desplegar Registry v2
+      ansible.builtin.import_role:
+        name: registry
+      when: section_registry | bool
+
+    - name: Configurar HAProxy
+      ansible.builtin.import_role:
+        name: haproxy
+      when: section_haproxy | bool
+
+    - name: Configurar Keepalived
+      ansible.builtin.import_role:
+        name: keepalived
+      when: section_keepalived | bool
+
+    - name: Instalar herramientas
+      ansible.builtin.import_role:
+        name: tools
+      when: section_tools | bool
+
+    - name: Instalar y ejecutar OpenSCAP opcional
+      ansible.builtin.import_role:
+        name: openscap
+      when: section_openscap | bool
