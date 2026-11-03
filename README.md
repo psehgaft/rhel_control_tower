@@ -44,3 +44,6 @@ site.yml
 requirements.yml
 ansible.cfg
 ```
+
+
+See docs/CONFIGURATION.md for the role matrix, variable reference, security notes, and Ansible Vault workflow.
