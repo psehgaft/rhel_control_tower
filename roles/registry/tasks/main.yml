@@ -1,0 +1,42 @@
+---
+- name: Validar Registry y TLS
+  ansible.builtin.assert:
+    that:
+      - not (registry_tls_enabled | bool) or (registry_cert_path != 'CHANGEME' and registry_key_path != 'CHANGEME')
+
+- name: Instalar Podman
+  ansible.builtin.package:
+    name: podman
+    state: present
+
+- name: Crear almacenamiento persistente
+  ansible.builtin.file:
+    path: "{{ registry_data_dir }}"
+    state: directory
+    owner: "1000"
+    group: "1000"
+    mode: "0750"
+
+- name: Instalar unidad systemd del Registry v2
+  ansible.builtin.template:
+    src: registry.service.j2
+    dest: "/etc/systemd/system/{{ registry_name }}.service"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Reiniciar Registry
+
+- name: Habilitar Registry
+  ansible.builtin.systemd:
+    name: "{{ registry_name }}"
+    daemon_reload: true
+    enabled: true
+    state: started
+
+- name: Abrir puerto del Registry
+  ansible.posix.firewalld:
+    port: "{{ registry_port }}/tcp"
+    permanent: true
+    immediate: true
+    state: enabled
+  when: registry_firewall_enabled | bool
