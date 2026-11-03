@@ -1,0 +1,9 @@
+---
+- name: Instalar colección IBM Power AIX en el controlador Ansible
+  community.general.ansible_galaxy_install:
+    type: collection
+    name: "{{ aix_collection_name }}"
+    state: present
+  delegate_to: localhost
+  become: false
+  run_once: true
