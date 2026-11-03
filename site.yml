@@ -29,7 +29,7 @@
     - name: Configure IdM users and groups
       ansible.builtin.import_role:
         name: idm_users_groups
-      when: section_idm_users_groups | bool
+      when: section_idm_identity_provider | bool
 
     - name: Configure IdM DNS
       ansible.builtin.import_role:
