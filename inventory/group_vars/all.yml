@@ -76,9 +76,16 @@ keepalived_state: BACKUP
 keepalived_peer: 192.0.2.11
 keepalived_auth_pass: CHANGEME
 
-tool_packages: [git, ansible-core, audit]
-# External binaries: {name, url, checksum: "sha256:<64hex>", dest}.
-tool_binaries: []
+tool_packages_by_rhel:
+  "7": [git, ansible, audit]
+  "8": [git, ansible-core, audit]
+  "9": [git, ansible-core, audit]
+  "10": [git, ansible-core, audit]
+# Configure release-specific URLs and verified SHA-256 values before enabling downloads.
+tool_binaries:
+  - {name: oc, url: CHANGEME, checksum: CHANGEME, dest: /usr/local/bin/oc}
+  - {name: kubelet, url: CHANGEME, checksum: CHANGEME, dest: /usr/local/bin/kubelet}
+  - {name: helm, url: CHANGEME, checksum: CHANGEME, dest: /usr/local/bin/helm}
 
 openscap_packages: [openscap-scanner, scap-security-guide]
 openscap_profile: ""
