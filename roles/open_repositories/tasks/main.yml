@@ -1,5 +1,5 @@
 ---
-- name: Validar repositorios aprobados
+- name: Validate approved repositories
   ansible.builtin.assert:
     that:
       - item.name is defined
@@ -7,7 +7,7 @@
       - item.gpgkey is defined
   loop: "{{ open_repositories }}"
 
-- name: Configurar repositorios públicos declarados
+- name: Configure declared public repositories
   ansible.builtin.yum_repository:
     name: "{{ item.name }}"
     description: "{{ item.description | default(item.name) }}"
