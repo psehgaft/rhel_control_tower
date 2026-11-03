@@ -1,10 +1,10 @@
 ---
-- name: Instalar HAProxy
+- name: Install HAProxy
   ansible.builtin.package:
     name: haproxy
     state: present
 
-- name: Configurar HAProxy
+- name: Configure HAProxy
   ansible.builtin.template:
     src: haproxy.cfg.j2
     dest: /etc/haproxy/haproxy.cfg
@@ -12,9 +12,9 @@
     group: root
     mode: "0644"
     validate: "haproxy -c -f %s"
-  notify: Reiniciar HAProxy
+  notify: Restart HAProxy
 
-- name: Habilitar HAProxy
+- name: Enable HAProxy
   ansible.builtin.service:
     name: haproxy
     state: started
