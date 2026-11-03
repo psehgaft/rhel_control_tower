@@ -1,11 +1,11 @@
 ---
-- name: Validar credenciales RHSM
+- name: Validate RHSM credentials
   ansible.builtin.assert:
     that:
       - rhsm_username != 'CHANGEME' or (rhsm_org_id != 'CHANGEME' and rhsm_activationkey != 'CHANGEME')
-    fail_msg: "Define credenciales RHSM o organization ID y activation key."
+    fail_msg: "Set RHSM credentials or an organization ID and activation key."
 
-- name: Registrar sistema RHSM
+- name: Register the system with RHSM
   community.general.redhat_subscription:
     state: present
     username: "{{ rhsm_username if rhsm_username != 'CHANGEME' else omit }}"
@@ -14,7 +14,7 @@
     activationkey: "{{ rhsm_activationkey if rhsm_activationkey != 'CHANGEME' else omit }}"
   no_log: true
 
-- name: Habilitar repositorios RHSM declarados
+- name: Enable the declared RHSM repositories
   community.general.rhsm_repository:
     name: "{{ item }}"
     state: enabled
