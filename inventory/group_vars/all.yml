@@ -1,5 +1,5 @@
 ---
-# Una bandera por rol. Mantener en false hasta completar variables y validar impacto.
+# One boolean flag per role. Keep each flag false until variables are configured and the impact is reviewed.
 section_subscription: false
 section_open_repositories: false
 section_idm_server: false
@@ -18,9 +18,12 @@ rhsm_username: CHANGEME
 rhsm_password: CHANGEME
 rhsm_org_id: CHANGEME
 rhsm_activationkey: CHANGEME
+idm_ldap_uri: ldaps://idm01.example.com
+idm_ldap_base_dn: dc=example,dc=com
+idm_kerberos_realm: EXAMPLE.COM
 rhsm_repositories: []
 
-# Lista permitida: name, baseurl, gpgkey; añadir URL y llave GPG aprobadas por versión.
+# Allowlist: name, baseurl, and gpgkey; add approved URLs and GPG keys for each RHEL version.
 open_repositories: []
 
 idm_domain: example.com
@@ -33,14 +36,14 @@ idm_dns_zones: [example.com]
 idm_dns_records:
   - {name: app01, zone: example.com, ip: 192.0.2.20}
 idm_groups:
-  - {name: sysadmins, description: Administradores de sistemas}
-  - {name: readers, description: Lectores}
+  - {name: sysadmins, description: System administrators}
+  - {name: readers, description: Readers}
 idm_users:
   - {name: sysadmin, first: System, last: Administrator, password: CHANGEME, groups: [sysadmins]}
   - {name: lector, first: Read, last: Only, password: CHANGEME, groups: [readers]}
 idm_user_manage_passwords: false
 
-# Instala la colección para administrar AIX en el controlador Ansible (no en este host RHEL).
+# Install the collection used to manage AIX on the Ansible control node, not on this RHEL host.
 aix_collection_name: ibm.power_aix
 
 nfs_packages: [nfs-utils]
@@ -74,7 +77,7 @@ keepalived_peer: 192.0.2.11
 keepalived_auth_pass: CHANGEME
 
 tool_packages: [git, ansible-core, audit]
-# Binarios externos: {name, url, checksum: "sha256:<64hex>", dest}.
+# External binaries: {name, url, checksum: "sha256:<64hex>", dest}.
 tool_binaries: []
 
 openscap_packages: [openscap-scanner, scap-security-guide]
