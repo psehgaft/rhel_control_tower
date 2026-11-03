@@ -1,0 +1,19 @@
+---
+- name: Instalar herramientas desde repositorios habilitados
+  ansible.builtin.package:
+    name: "{{ tool_packages }}"
+    state: present
+
+- name: Descargar binarios externos con SHA-256 validado
+  ansible.builtin.get_url:
+    url: "{{ item.url }}"
+    dest: "{{ item.dest }}"
+    checksum: "{{ item.checksum }}"
+    mode: "0755"
+    owner: root
+    group: root
+  loop: "{{ tool_binaries }}"
+  when:
+    - item.url is defined
+    - item.checksum is defined
+    - item.checksum is match('^sha256:[0-9a-fA-F]{64}$')
