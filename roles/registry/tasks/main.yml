@@ -4,6 +4,26 @@
     that:
       - not (registry_tls_enabled | bool) or (registry_cert_path != 'CHANGEME' and registry_key_path != 'CHANGEME')
 
+- name: Check the registry TLS certificate
+  ansible.builtin.stat:
+    path: "{{ registry_cert_path }}"
+  register: registry_certificate
+  when: registry_tls_enabled | bool
+
+- name: Check the registry TLS private key
+  ansible.builtin.stat:
+    path: "{{ registry_key_path }}"
+  register: registry_private_key
+  when: registry_tls_enabled | bool
+
+- name: Require registry TLS files
+  ansible.builtin.assert:
+    that:
+      - registry_certificate.stat.exists
+      - registry_private_key.stat.exists
+    fail_msg: "Install the registry TLS certificate and private key before deployment."
+  when: registry_tls_enabled | bool
+
 - name: Install Podman
   ansible.builtin.package:
     name: podman
