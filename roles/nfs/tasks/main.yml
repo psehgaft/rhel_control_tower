@@ -1,10 +1,10 @@
 ---
-- name: Instalar utilidades NFS
+- name: Install NFS utilities
   ansible.builtin.package:
     name: "{{ nfs_packages }}"
     state: present
 
-- name: Crear directorios exportados
+- name: Create exported directories
   ansible.builtin.file:
     path: "{{ item.path }}"
     state: directory
@@ -13,7 +13,7 @@
     mode: "0755"
   loop: "{{ nfs_exports }}"
 
-- name: Configurar exports
+- name: Configure NFS exports
   ansible.builtin.lineinfile:
     path: /etc/exports
     regexp: "^{{ item.path | regex_escape }}\\s"
@@ -23,15 +23,15 @@
     group: root
     mode: "0644"
   loop: "{{ nfs_exports }}"
-  notify: Aplicar exports NFS
+  notify: Apply NFS exports
 
-- name: Habilitar NFS
+- name: Enable NFS
   ansible.builtin.service:
     name: nfs-server
     state: started
     enabled: true
 
-- name: Abrir puertos de NFS en firewalld
+- name: Open NFS services in firewalld
   ansible.posix.firewalld:
     service: "{{ item }}"
     permanent: true
