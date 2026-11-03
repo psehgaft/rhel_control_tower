@@ -1,0 +1,28 @@
+---
+- name: Validar variables VIP
+  ansible.builtin.assert:
+    that:
+      - keepalived_interface != 'CHANGEME'
+      - keepalived_auth_pass != 'CHANGEME'
+      - keepalived_priority | int >= 1
+      - keepalived_priority | int <= 254
+
+- name: Instalar Keepalived
+  ansible.builtin.package:
+    name: keepalived
+    state: present
+
+- name: Configurar Keepalived
+  ansible.builtin.template:
+    src: keepalived.conf.j2
+    dest: /etc/keepalived/keepalived.conf
+    owner: root
+    group: root
+    mode: "0600"
+  notify: Reiniciar Keepalived
+
+- name: Habilitar Keepalived
+  ansible.builtin.service:
+    name: keepalived
+    state: started
+    enabled: true
