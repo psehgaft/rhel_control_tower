@@ -1,77 +1,77 @@
 ---
-- name: Preparar servidores RHEL
+- name: Prepare RHEL servers
   hosts: rhel_servers
   become: true
   gather_facts: true
   tasks:
-    - name: Validar la versión mayor de RHEL
+    - name: Validate the RHEL major version
       ansible.builtin.assert:
         that:
           - ansible_facts['os_family'] == 'RedHat'
           - ansible_facts['distribution_major_version'] | int in [7, 8, 9, 10]
-        fail_msg: "Objetivo permitido: RHEL 7, 8, 9 o 10."
+        fail_msg: "Supported targets are RHEL 7, 8, 9, and 10."
 
-    - name: Registrar nodo RHSM
+    - name: Register the node with RHSM
       ansible.builtin.import_role:
         name: subscription
       when: section_subscription | bool
 
-    - name: Configurar repositorios abiertos permitidos
+    - name: Configure approved public repositories
       ansible.builtin.import_role:
         name: open_repositories
       when: section_open_repositories | bool
 
-    - name: Instalar servidor IdM
+    - name: Install the IdM server
       ansible.builtin.import_role:
         name: idm_server
       when: section_idm_server | bool
 
-    - name: Configurar usuarios y grupos IdM
+    - name: Configure IdM users and groups
       ansible.builtin.import_role:
         name: idm_users_groups
       when: section_idm_users_groups | bool
 
-    - name: Configurar DNS de IdM
+    - name: Configure IdM DNS
       ansible.builtin.import_role:
         name: idm_dns
       when: section_idm_dns | bool
 
-    - name: Instalar colección IBM AIX en el controlador
+    - name: Install the IBM AIX collection on the control node
       ansible.builtin.import_role:
         name: aix_automation
       when: section_aix_automation | bool
 
-    - name: Configurar NFS
+    - name: Configure NFS
       ansible.builtin.import_role:
         name: nfs
       when: section_nfs | bool
 
-    - name: Configurar Podman
+    - name: Configure Podman
       ansible.builtin.import_role:
         name: podman
       when: section_podman | bool
 
-    - name: Desplegar Registry v2
+    - name: Deploy Registry v2
       ansible.builtin.import_role:
         name: registry
       when: section_registry | bool
 
-    - name: Configurar HAProxy
+    - name: Configure HAProxy
       ansible.builtin.import_role:
         name: haproxy
       when: section_haproxy | bool
 
-    - name: Configurar Keepalived
+    - name: Configure Keepalived
       ansible.builtin.import_role:
         name: keepalived
       when: section_keepalived | bool
 
-    - name: Instalar herramientas
+    - name: Install administration tools
       ansible.builtin.import_role:
         name: tools
       when: section_tools | bool
 
-    - name: Instalar y ejecutar OpenSCAP opcional
+    - name: Install OpenSCAP and optionally run a scan
       ansible.builtin.import_role:
         name: openscap
       when: section_openscap | bool
